@@ -3,14 +3,10 @@
  * Development: leave unset so requests go to the same origin and Vite proxies /api → backend.
  */
 export function getApiBaseUrl() {
-  const raw = import.meta.env.VITE_API_URL;
-  if (raw == null || String(raw).trim() === '') return '';
-  return String(raw).replace(/\/+$/, '');
+  return "https://fitverse-1-lv1o.onrender.com";
 }
 
 export function apiUrl(path) {
-  const base = getApiBaseUrl();
   const p = path.startsWith('/') ? path : `/${path}`;
-  if (!base) return p;
-  return `${base}${p}`;
+  return `https://fitverse-1-lv1o.onrender.com${p}`;
 }
