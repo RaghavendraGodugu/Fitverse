@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Dumbbell, Play, Loader2, X } from 'lucide-react';
+import { Search, Dumbbell, Loader2, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { apiUrl } from '../lib/api';
 
@@ -20,13 +20,10 @@ export default function Exercises() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeVideo, setActiveVideo] = useState(null);
 
-  // ✅ FETCH FROM BACKEND (FIXED)
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['exercises'],
     queryFn: async () => {
       const url = apiUrl('/api/exercises?limit=1500');
-      console.log("API CALL 👉", url); // 🔥 DEBUG
-
       const res = await fetch(url);
 
       if (!res.ok) {
@@ -64,7 +61,6 @@ export default function Exercises() {
       animate="visible"
       className="space-y-8 pb-20 relative"
     >
-      {/* HEADER */}
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl font-bold tracking-tight">Exercise Library</h1>
         <p className="text-zinc-400">
@@ -72,7 +68,6 @@ export default function Exercises() {
         </p>
       </div>
 
-      {/* SEARCH + FILTER */}
       <motion.div
         variants={itemVariants}
         className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/5 p-4 rounded-2xl"
@@ -106,7 +101,6 @@ export default function Exercises() {
         </div>
       </motion.div>
 
-      {/* LOADING */}
       {isLoading && (
         <div className="flex flex-col items-center py-20">
           <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
@@ -114,7 +108,6 @@ export default function Exercises() {
         </div>
       )}
 
-      {/* ERROR */}
       {isError && (
         <div className="text-center py-20 text-red-500 bg-red-500/10 rounded-xl">
           <Dumbbell className="w-10 h-10 mx-auto mb-2" />
@@ -125,7 +118,6 @@ export default function Exercises() {
         </div>
       )}
 
-      {/* GRID */}
       {!isLoading && !isError && (
         <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence>
@@ -140,7 +132,7 @@ export default function Exercises() {
               >
                 <img
                   src={ex.gifUrl}
-                  alt={ex.name}
+                  alt={ex.name || 'Exercise image'}
                   className="w-full h-60 object-contain bg-gray-200"
                 />
 
@@ -156,14 +148,12 @@ export default function Exercises() {
         </motion.div>
       )}
 
-      {/* EMPTY */}
       {!isLoading && !isError && filtered.length === 0 && (
         <p className="text-center text-zinc-500 py-20">
           No exercises found
         </p>
       )}
 
-      {/* MODAL */}
       <AnimatePresence>
         {activeVideo && (
           <motion.div className="fixed inset-0 flex items-center justify-center bg-black/80">
@@ -171,7 +161,10 @@ export default function Exercises() {
               <button onClick={() => setActiveVideo(null)}>
                 <X />
               </button>
-              <img src={activeVideo.gifUrl} />
+              <img
+                src={activeVideo.gifUrl}
+                alt={activeVideo.name || 'Exercise preview'}
+              />
               <h2 className="text-xl mt-2">{activeVideo.name}</h2>
             </div>
           </motion.div>
