@@ -10,14 +10,19 @@ import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 
-// Create a client
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
+  }
+
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+
   return children;
 };
 
@@ -28,11 +33,14 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <MainLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<Home />} />
               <Route path="plan" element={<WorkoutPlan />} />
               <Route path="workouts" element={<Workouts />} />
