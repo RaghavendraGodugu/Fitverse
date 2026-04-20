@@ -67,9 +67,9 @@ Instructions:
         const userContext = getMockUserContext();
         const prompt = this.buildPrompt(userContext, query);
 
-        // Standardizing to 1.5-flash as it is the current supported model
+        // Standardizing to flash-latest as it is the most reliable cluster path
         const model = this.genAI.getGenerativeModel({
-          model: "gemini-1.5-flash",
+          model: "gemini-flash-latest",
           generationConfig: { responseMimeType: "application/json" }
         });
 
@@ -90,24 +90,11 @@ Instructions:
 
         console.error('Gemini API Service Error:', error.message);
 
-        // Provide a smart local fallback instead of an error message if quota completely maxed OR if JSON parsing broke completely
-        const lQuery = query.toLowerCase();
-        const isDiet = lQuery.includes('diet') || lQuery.includes('food') || lQuery.includes('eat') || lQuery.includes('protein');
-        const isWorkout = lQuery.includes('workout') || lQuery.includes('exercise') || lQuery.includes('lift') || lQuery.includes('muscle');
-        
-        const userContext = getMockUserContext();
-        
-        let advice = "Consistency is the ultimate driver of results. Stay disciplined to your routine and ensure 8 hours of sleep.";
-        if (isDiet) {
-          advice = `To hit your goal of ${userContext.goal}, focus on consuming roughly 2g of protein per kg of your ${userContext.weight} bodyweight daily.`;
-        } else if (isWorkout) {
-          advice = "Progressive overload is key. Review your recent history (3 workouts done) and try to increase your volume by 2-5% today.";
-        }
-
+        // Relay the exact API error instead of a generic mock response
         return {
-          advice,
-          reason: `Offline cache response automatically applied due to server limit or formatting anomaly.`,
-          actionPlan: ["Drink plenty of water", "Focus on recovery", "Execute your scheduled training block"]
+          advice: "Uh oh! Google Gemini API has blocked your request. Please check your API key quota.",
+          reason: `API Blocked: ${error.message}`,
+          actionPlan: ["Go to Google AI Studio and check your Billing / Quota Dashboard", "If you see 'limit: 0', your account doesn't have Free Tier access.", "Try adding a billing method to your Google account."]
         };
       }
     }

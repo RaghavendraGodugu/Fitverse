@@ -114,20 +114,18 @@ export default function ChatModal() {
             <div ref={endOfMessagesRef} className="h-1 pb-4" />
           </div>
 
-          {/* Suggested Prompts (disappears if typing or messages > 1 to save space, but lets keep it visible always if scrolled) */}
-          {messages.length < 3 && (
-            <div className="px-4 pb-2 flex gap-2 overflow-x-auto hide-scrollbar whitespace-nowrap">
-              {suggestedReplies.map((reply, i) => (
-                <button 
-                  key={i}
-                  onClick={() => handleSuggestedClick(reply)}
-                  className="text-xs px-3 py-1.5 rounded-full border border-brand-500/30 text-brand-300 hover:bg-brand-500/10 transition-colors"
-                >
-                  {reply}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Suggested Prompts */}
+          <div className="px-4 pb-2 flex gap-2 overflow-x-auto hide-scrollbar whitespace-nowrap">
+            {suggestedReplies.map((reply, i) => (
+              <button 
+                key={i}
+                onClick={() => handleSuggestedClick(reply)}
+                className="text-xs px-3 py-1.5 rounded-full border border-brand-500/30 text-brand-300 hover:bg-brand-500/10 transition-colors"
+              >
+                {reply}
+              </button>
+            ))}
+          </div>
 
           {/* Input Area */}
           <div className="p-4 bg-dark-900 border-t border-white/5">
