@@ -67,9 +67,9 @@ Instructions:
         const userContext = getMockUserContext();
         const prompt = this.buildPrompt(userContext, query);
 
-        // Standardizing to 2.5-flash as it is the current supported model
+        // Standardizing to 1.5-flash as it is the current supported model
         const model = this.genAI.getGenerativeModel({
-          model: "gemini-2.5-flash",
+          model: "gemini-1.5-flash",
           generationConfig: { responseMimeType: "application/json" }
         });
 

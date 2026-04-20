@@ -27,7 +27,7 @@ export default function Exercises() {
       const url = apiUrl('/api/exercises?limit=1500');
       console.log("API CALL 👉", url); // 🔥 DEBUG
 
-      const res = await fetch(url);
+      const res = await fetch("https://fitverse-1-lv1o.onrender.com/api/exercises?limit=1500");
 
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
