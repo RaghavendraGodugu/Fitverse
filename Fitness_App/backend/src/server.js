@@ -19,6 +19,8 @@ app.use(
 
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost:3000',
+  'https://fit-verse.netlify.app',
   'https://fitverse.vercel.app',
   'https://fitverse-fwvu0mpvv-raghus-projects-b7146480.vercel.app',
 ];
@@ -63,17 +65,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-if (process.env.MONGO_URI) {
-  mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => {
-      console.log('MongoDB connected');
-    })
-    .catch((err) => {
-      console.error('MongoDB connection error:', err.message);
-    });
-}
-
 const PORT = process.env.PORT || 5001;
 const server = http.createServer(app);
 
@@ -86,6 +77,24 @@ server.on('error', (err) => {
   process.exit(1);
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    if (!process.env.MONGO_URI) {
+      console.warn('MONGO_URI is not set. Server will start without MongoDB.');
+    } else {
+      await mongoose.connect(process.env.MONGO_URI);
+      console.log('MongoDB connected');
+    }
+
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('MongoDB connection error:', err.message);
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT} without MongoDB`);
+    });
+  }
+};
+
+startServer();
