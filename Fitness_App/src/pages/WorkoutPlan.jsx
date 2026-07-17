@@ -66,11 +66,29 @@ Return 7 days starting from Monday to Sunday. If it is a rest day, set "isRest":
           'Content-Type': 'application/json',
           'Authorization': 'Bearer mock-token'
         },
-        body: JSON.stringify({ query })
+        body: JSON.stringify({
+          query,
+          mode: 'workout_plan',
+          userProfile: {
+            age: profileStore.age,
+            height: formData.height,
+            weight: formData.weight,
+            goal: formData.goal,
+            gender: formData.gender,
+            level: profileStore.level,
+          },
+        }),
       });
       
-      if (!aiRes.ok) throw new Error('AI API Error');
       const aiJson = await aiRes.json();
+      if (!aiRes.ok) {
+        const detail = aiJson.detail;
+        const message =
+          (typeof detail === 'object' && detail?.error) ||
+          (typeof detail === 'string' ? detail : null) ||
+          'AI API Error';
+        throw new Error(message);
+      }
       
       let generatedSchedule = [];
       if (aiJson.data?.schedule) {

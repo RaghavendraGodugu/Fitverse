@@ -89,13 +89,17 @@ Every single data point—from your active workout state to your chat history wi
    ```
 
 3. **Configure Environment Variables:**
-   - Create a `.env` file in the root.
-   - Add your Firebase and Gemini API keys:
+   - Create a `.env` file in the root for Firebase (frontend).
+   - Create `backend/.env` for the AI coach backend:
+     ```env
+     GEMINI_API_KEY=your_gemini_api_key
+     ```
+     Get a key from [Google AI Studio](https://aistudio.google.com/apikey).
+   - Frontend Firebase keys (root `.env`):
      ```env
      VITE_FIREBASE_API_KEY=your_api_key
      VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
      ...
-     VITE_GEMINI_API_KEY=your_gemini_api_key
      ```
 
 4. **Run the Development Server:**

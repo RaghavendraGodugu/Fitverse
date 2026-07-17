@@ -1,16 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { apiUrl } from '../lib/api';
+import { useProfileStore } from './useProfileStore';
 
 const defaultMessages = [
   {
     id: '1',
     role: 'assistant',
     content:
-      "Hi! I'm Fitverse Coach. Ask about workouts, form, nutrition, or recovery — I'll use your question to give concise, practical advice.",
+      "Hi! I'm Fitverse Coach powered by Gemini. Ask about workouts, form, nutrition, or recovery — I'll give personalized advice based on your profile.",
     timestamp: Date.now(),
   },
 ];
+
+function getProfilePayload() {
+  const { age, height, weight, goal, level, gender, diet } = useProfileStore.getState();
+  return { age, height, weight, goal, level, gender, diet };
+}
 
 export const useChatStore = create(
   persist(
@@ -40,18 +46,24 @@ export const useChatStore = create(
           const res = await fetch(apiUrl('/api/ai/chat'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: content }),
+            body: JSON.stringify({
+              query: content,
+              mode: 'coaching',
+              userProfile: getProfilePayload(),
+            }),
           });
 
           const json = await res.json().catch(() => ({}));
 
           if (!res.ok) {
-            addMessage({
-              role: 'assistant',
-              content:
-                json.error ||
-                'Could not reach the API. From the Fitness_App folder run `npm run dev` so both Vite and the backend start, or run the backend with `cd backend && npm run dev` if you use Vite alone.',
-            });
+            const detail = json.detail;
+            const errorMessage =
+              (typeof detail === 'object' && detail?.error) ||
+              (typeof detail === 'string' ? detail : null) ||
+              json.error ||
+              'Could not reach the AI coach. Ensure the backend is running and GEMINI_API_KEY is set in backend/.env.';
+
+            addMessage({ role: 'assistant', content: errorMessage });
             return;
           }
 
@@ -74,7 +86,7 @@ export const useChatStore = create(
           addMessage({
             role: 'assistant',
             content:
-              'Could not reach the API. From the Fitness_App folder run `npm run dev` so both Vite and the backend start, or run the backend with `cd backend && npm run dev` if you use Vite alone.',
+              'Could not reach the API. From the Fitness_App folder run `npm run dev` so both Vite and the backend start.',
           });
         } finally {
           setTyping(false);
